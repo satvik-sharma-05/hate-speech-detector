@@ -1,5 +1,13 @@
 # 🤖 AI Engineer Guide
 
+## 🌐 Live Demo
+
+- **Try it**: https://hate-speech-detector-sigma.vercel.app/
+- **API**: https://hate-speech-detector-backend-oamo.onrender.com
+- **Docs**: https://hate-speech-detector-backend-oamo.onrender.com/docs
+
+---
+
 ## Model Architecture
 
 **Bidirectional LSTM for Text Classification**
@@ -124,18 +132,21 @@ async def predict(request: PredictionRequest):
 - Async processing for concurrency
 
 ### Deployment
-- Backend: Render (Python 3.12)
-- Frontend: Vercel (React 18)
+- Backend: Render (Python 3.10, TensorFlow 2.13.0)
+- Frontend: Vercel (React 18, Vite)
 - Auto-scaling enabled
+- Live at: https://hate-speech-detector-sigma.vercel.app/
 
 ## Model Files
 
 ```
 backend/
 ├── model.h5           # Trained model (17MB)
-├── tokenizer.pkl      # Keras Tokenizer (1.4MB)
+├── tokenizer.json     # Keras Tokenizer (1.4MB, JSON format)
 └── seq_len.pkl        # Sequence length (50)
 ```
+
+**Note**: Using JSON format for tokenizer ensures compatibility across different Keras/TensorFlow versions.
 
 ## Reproducing Training
 
@@ -210,12 +221,15 @@ weighted avg           0.90     0.90     0.90
 ## Testing
 
 ```bash
-# Unit tests
+# Test local API
 cd tests
 python test_api.py
 
+# Test production API
+python test_api.py https://hate-speech-detector-backend-oamo.onrender.com
+
 # Load testing
-ab -n 1000 -c 10 http://localhost:8000/predict
+ab -n 1000 -c 10 https://hate-speech-detector-backend-oamo.onrender.com/predict
 
 # Model evaluation
 python evaluate_model.py
@@ -234,10 +248,13 @@ python evaluate_model.py
 
 ## References
 
-- Dataset: Twitter Hate Speech Dataset
-- Framework: TensorFlow/Keras
-- Deployment: Render + Vercel
-- Code: See `backend/main.py`
+- **Live Demo**: https://hate-speech-detector-sigma.vercel.app/
+- **API Docs**: https://hate-speech-detector-backend-oamo.onrender.com/docs
+- **Dataset**: Twitter Hate Speech Dataset
+- **Framework**: TensorFlow 2.13.0 / Keras 2.13.1
+- **Deployment**: Render (backend) + Vercel (frontend)
+- **GitHub**: https://github.com/satvik-sharma-05/hate-speech-detector
+- **Code**: See `backend/main.py`
 
 ## Quick Commands
 

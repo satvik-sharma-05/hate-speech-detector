@@ -4,6 +4,13 @@
 
 This document provides a deep dive into the architecture, implementation, and deployment of the hate speech detection system.
 
+## 🌐 Live Production System
+
+- **Frontend**: https://hate-speech-detector-sigma.vercel.app/
+- **Backend API**: https://hate-speech-detector-backend-oamo.onrender.com
+- **API Documentation**: https://hate-speech-detector-backend-oamo.onrender.com/docs
+- **GitHub**: https://github.com/satvik-sharma-05/hate-speech-detector
+
 ---
 
 ## 📋 Table of Contents
@@ -544,27 +551,35 @@ export default App
 ### Backend (Render)
 
 ```yaml
-# backend/render.yaml
+# render.yaml (root directory)
 services:
   - type: web
     name: hate-speech-api
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: "pip install -r requirements-render.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.12.0
+        value: 3.10.0
+      - key: TF_CPP_MIN_LOG_LEVEL
+        value: 2
 ```
 
 ```txt
 # backend/requirements-render.txt
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-tensorflow-cpu==2.15.0
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
+tensorflow-cpu==2.13.0
+keras==2.13.1
 scikit-learn==1.3.2
 python-multipart==0.0.6
-pydantic==2.5.0
+pydantic==1.10.12
 numpy==1.24.3
+protobuf==3.20.3
+typing-extensions==4.5.0
 ```
 
 ### Frontend (Vercel)
@@ -719,6 +734,9 @@ Interactive API documentation (Swagger UI)
 
 ## 📚 Resources & Links
 
+- **Live Demo**: https://hate-speech-detector-sigma.vercel.app/
+- **API Docs**: https://hate-speech-detector-backend-oamo.onrender.com/docs
+- **GitHub Repository**: https://github.com/satvik-sharma-05/hate-speech-detector
 - **TensorFlow Documentation**: https://www.tensorflow.org
 - **FastAPI Documentation**: https://fastapi.tiangolo.com
 - **React Documentation**: https://react.dev
