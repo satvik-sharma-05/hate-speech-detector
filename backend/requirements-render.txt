@@ -1,8 +1,8 @@
 # Optimized requirements for Render's 512MB free tier
-# Match training environment versions
+# Match training environment versions with compatible dependencies
 
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
+fastapi==0.95.2
+uvicorn[standard]==0.22.0
 
 # Use versions matching training environment
 tensorflow-cpu==2.13.0
@@ -10,8 +10,9 @@ keras==2.13.1
 
 scikit-learn==1.3.2
 python-multipart==0.0.6
-pydantic==2.5.0
+pydantic==1.10.12
 
 # Additional optimizations
 numpy==1.24.3
 protobuf==3.20.3
+typing-extensions==4.5.0
