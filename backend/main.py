@@ -64,21 +64,13 @@ async def lifespan(app: FastAPI):
             tokenizer = tokenizer_from_json(tokenizer_json)
         logger.info("Tokenizer loaded successfully from JSON")
         
-        # Load Keras model with compatibility handling
+        # Load Keras model (H5 format compatible with TF 2.13)
         logger.info("Loading Keras model...")
-        model_path = 'model.keras'
+        model_path = 'model.h5'
         if not os.path.exists(model_path):
-            model_path = '../model.keras'
+            model_path = '../model.h5'
         
-        # Load with compile=False to avoid optimizer issues
-        model = tf.keras.models.load_model(model_path, compile=False)
-        
-        # Recompile the model
-        model.compile(
-            optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
-            loss='sparse_categorical_crossentropy',
-            metrics=['accuracy']
-        )
+        model = tf.keras.models.load_model(model_path)
         logger.info("Model loaded successfully")
         
     except Exception as e:
