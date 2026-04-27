@@ -2,6 +2,12 @@
 
 Real-time hate speech detection using Bidirectional LSTM neural network. Classifies text into: Hate Speech, Offensive Language, or Neither.
 
+## 🌐 Live Demo
+
+- **Frontend**: https://hate-speech-detector-sigma.vercel.app/
+- **Backend API**: https://hate-speech-detector-backend-oamo.onrender.com
+- **API Docs**: https://hate-speech-detector-backend-oamo.onrender.com/docs
+
 ## 🚀 Quick Start
 
 ### Backend

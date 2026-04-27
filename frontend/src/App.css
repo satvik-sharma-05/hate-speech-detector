@@ -492,3 +492,67 @@ textarea:disabled {
     color: #9ca3af;
     font-style: italic;
 }
+
+/* Disclaimer Styling */
+.disclaimer {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    border-left: 4px solid #f59e0b;
+    border-radius: 8px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.disclaimer h4 {
+    color: #92400e;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.disclaimer p {
+    color: #78350f;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.disclaimer ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0.75rem 0;
+}
+
+.disclaimer li {
+    color: #78350f;
+    margin-bottom: 0.5rem;
+    padding-left: 1.5rem;
+    position: relative;
+    line-height: 1.6;
+}
+
+.disclaimer li:before {
+    content: "•";
+    position: absolute;
+    left: 0.5rem;
+    color: #f59e0b;
+    font-weight: bold;
+}
+
+.disclaimer li strong {
+    color: #92400e;
+}
+
+.disclaimer-note {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: rgba(245, 158, 11, 0.1);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #78350f;
+}
+
+.disclaimer-note strong {
+    color: #92400e;
+}

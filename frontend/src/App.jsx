@@ -164,6 +164,24 @@ function App() {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Model Limitations Disclaimer */}
+                        <div className="disclaimer">
+                            <h4>⚠️ Model Limitations</h4>
+                            <p>This model may sometimes produce incorrect predictions due to:</p>
+                            <ul>
+                                <li><strong>Context Understanding:</strong> The model analyzes text patterns but may miss nuanced context, sarcasm, or cultural references</li>
+                                <li><strong>Offensive Language Detection:</strong> The model struggles to distinguish between casual profanity and targeted hate speech (trained on imbalanced data: 77% offensive, 6% hate speech)</li>
+                                <li><strong>Training Data Bias:</strong> Trained primarily on Twitter data from a specific time period, which may not represent all language patterns</li>
+                                <li><strong>Short Text Limitations:</strong> Very short texts (1-3 words) may not provide enough context for accurate classification</li>
+                                <li><strong>Evolving Language:</strong> New slang, coded language, or emerging hate speech patterns may not be recognized</li>
+                                <li><strong>False Positives/Negatives:</strong> Some neutral statements may be flagged, while some harmful content may be missed</li>
+                            </ul>
+                            <p className="disclaimer-note">
+                                <strong>Note:</strong> This tool is intended for educational and research purposes.
+                                For production content moderation, combine with human review and multiple detection systems.
+                            </p>
+                        </div>
                     </div>
                 )}
 
@@ -286,9 +304,9 @@ function App() {
                 <footer className="footer">
                     <p>Powered by LSTM Neural Network | Built with FastAPI & React</p>
                     <p className="footer-links">
-                        <a href="http://localhost:8000/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
+                        <a href="https://hate-speech-detector-backend-oamo.onrender.com/docs" target="_blank" rel="noopener noreferrer">API Docs</a>
                         {' | '}
-                        <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+                        <a href="https://github.com/satvik-sharma-05/hate-speech-detector" target="_blank" rel="noopener noreferrer">GitHub</a>
                         {' | '}
                         <span className="footer-note">📚 See DEVELOPER_DOCUMENTATION.md for technical details</span>
                     </p>
