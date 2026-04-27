@@ -47,8 +47,10 @@ python test_api.py
 
 ## 📖 Documentation
 
+- [Quick Start](docs/QUICKSTART.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
-- [Developer Documentation](docs/DEVELOPER_DOCUMENTATION.md)
+- [AI Engineer Guide](docs/AI_ENGINEER_GUIDE.md) - Model architecture & training
+- [Developer Documentation](docs/DEVELOPER_DOCUMENTATION.md) - Complete technical guide
 
 ## 🎯 Features
 
