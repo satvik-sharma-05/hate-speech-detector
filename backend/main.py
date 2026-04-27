@@ -7,6 +7,7 @@ from tensorflow.keras.preprocessing.text import tokenizer_from_json
 import pickle
 import json
 import os
+import sys
 import re
 import logging
 from contextlib import asynccontextmanager
@@ -70,11 +71,15 @@ async def lifespan(app: FastAPI):
         if not os.path.exists(model_path):
             model_path = '../model.h5'
         
+        logger.info(f"Model path: {model_path}")
+        logger.info(f"Model file exists: {os.path.exists(model_path)}")
+        
         model = tf.keras.models.load_model(model_path)
         logger.info("Model loaded successfully")
+        logger.info("Startup complete!")
         
     except Exception as e:
-        logger.error(f"Error during startup: {str(e)}")
+        logger.error(f"Error during startup: {str(e)}", exc_info=True)
         raise
     
     yield
@@ -89,6 +94,15 @@ app = FastAPI(
     version="2.0.0",
     lifespan=lifespan
 )
+
+# Add startup event for logging
+@app.on_event("startup")
+async def startup_event():
+    logger.info("FastAPI app starting up...")
+    logger.info(f"Python version: {os.sys.version}")
+    logger.info(f"TensorFlow version: {tf.__version__}")
+    logger.info(f"Working directory: {os.getcwd()}")
+    logger.info(f"Files in current directory: {os.listdir('.')}")
 
 # Configure CORS
 app.add_middleware(
