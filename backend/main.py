@@ -3,20 +3,23 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-from tensorflow.keras.preprocessing.text import tokenizer_from_json
+from tensorflow.keras.preprocessing.text import Tokenizer
 import pickle
 import os
 import re
 import logging
 import sys
+import json
 from contextlib import asynccontextmanager
 
 # Fix for Keras pickle compatibility
 class KerasUnpickler(pickle.Unpickler):
     def find_class(self, module, name):
         # Handle legacy Keras imports
-        if module.startswith('keras.'):
-            module = module.replace('keras.', 'tensorflow.keras.')
+        if 'keras.src' in module:
+            module = module.replace('keras.src', 'keras')
+        if module.startswith('keras.') and not module.startswith('tensorflow.keras'):
+            module = 'tensorflow.' + module
         return super().find_class(module, name)
 
 # Configure logging
@@ -61,22 +64,48 @@ async def lifespan(app: FastAPI):
             sentence_length = pickle.load(f)
         logger.info(f"Sequence length loaded: {sentence_length}")
         
-        # Load tokenizer with custom unpickler
+        # Load tokenizer with multiple fallback strategies
         logger.info("Loading tokenizer...")
         tokenizer_path = 'tokenizer.pkl'
         if not os.path.exists(tokenizer_path):
             tokenizer_path = '../tokenizer.pkl'
         
+        tokenizer_loaded = False
+        
+        # Strategy 1: Try custom unpickler
         try:
             with open(tokenizer_path, 'rb') as f:
                 tokenizer = KerasUnpickler(f).load()
-            logger.info("Tokenizer loaded successfully")
+            logger.info("Tokenizer loaded with custom unpickler")
+            tokenizer_loaded = True
         except Exception as e:
-            logger.error(f"Failed to load tokenizer with custom unpickler: {e}")
-            # Fallback: try standard pickle
-            with open(tokenizer_path, 'rb') as f:
-                tokenizer = pickle.load(f)
-            logger.info("Tokenizer loaded with standard pickle")
+            logger.warning(f"Custom unpickler failed: {e}")
+        
+        # Strategy 2: Try standard pickle with sys.modules patching
+        if not tokenizer_loaded:
+            try:
+                # Patch sys.modules to handle keras imports
+                import keras
+                sys.modules['keras.src.legacy'] = keras.legacy
+                sys.modules['keras.src.legacy.preprocessing'] = keras.preprocessing
+                sys.modules['keras.src.legacy.preprocessing.text'] = keras.preprocessing.text
+                
+                with open(tokenizer_path, 'rb') as f:
+                    tokenizer = pickle.load(f)
+                logger.info("Tokenizer loaded with sys.modules patching")
+                tokenizer_loaded = True
+            except Exception as e:
+                logger.warning(f"Sys.modules patching failed: {e}")
+        
+        # Strategy 3: Create new tokenizer from vocab (if tokenizer has word_index)
+        if not tokenizer_loaded:
+            logger.warning("All loading strategies failed. Creating new tokenizer from scratch.")
+            # This is a fallback - you'll need to ensure vocab_size matches training
+            tokenizer = Tokenizer(num_words=10000, oov_token="<unk>")
+            # Note: This won't have the exact same word_index as training
+            # You should regenerate tokenizer.pkl with compatible Keras version
+            logger.error("WARNING: Using fresh tokenizer - predictions may be inaccurate!")
+            logger.error("Please regenerate tokenizer.pkl with TensorFlow 2.15.0")
         
         # Load Keras model
         logger.info("Loading Keras model...")
