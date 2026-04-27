@@ -3,11 +3,21 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.preprocessing.text import tokenizer_from_json
 import pickle
 import os
 import re
 import logging
+import sys
 from contextlib import asynccontextmanager
+
+# Fix for Keras pickle compatibility
+class KerasUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        # Handle legacy Keras imports
+        if module.startswith('keras.'):
+            module = module.replace('keras.', 'tensorflow.keras.')
+        return super().find_class(module, name)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -51,15 +61,22 @@ async def lifespan(app: FastAPI):
             sentence_length = pickle.load(f)
         logger.info(f"Sequence length loaded: {sentence_length}")
         
-        # Load tokenizer
+        # Load tokenizer with custom unpickler
         logger.info("Loading tokenizer...")
         tokenizer_path = 'tokenizer.pkl'
         if not os.path.exists(tokenizer_path):
             tokenizer_path = '../tokenizer.pkl'
         
-        with open(tokenizer_path, 'rb') as f:
-            tokenizer = pickle.load(f)
-        logger.info("Tokenizer loaded successfully")
+        try:
+            with open(tokenizer_path, 'rb') as f:
+                tokenizer = KerasUnpickler(f).load()
+            logger.info("Tokenizer loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load tokenizer with custom unpickler: {e}")
+            # Fallback: try standard pickle
+            with open(tokenizer_path, 'rb') as f:
+                tokenizer = pickle.load(f)
+            logger.info("Tokenizer loaded with standard pickle")
         
         # Load Keras model
         logger.info("Loading Keras model...")
