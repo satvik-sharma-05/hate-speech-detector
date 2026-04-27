@@ -74,13 +74,14 @@ async def lifespan(app: FastAPI):
         logger.info(f"Model path: {model_path}")
         logger.info(f"Model file exists: {os.path.exists(model_path)}")
         
-        model = tf.keras.models.load_model(model_path)
+        # Load without compiling to avoid optimizer deserialization issues
+        model = tf.keras.models.load_model(model_path, compile=False)
         logger.info("Model loaded successfully")
         logger.info("Startup complete!")
         
     except Exception as e:
-        logger.error(f"Error during startup: {str(e)}", exc_info=True)
-        raise
+        logger.error(f"Startup failed: {str(e)}", exc_info=True)
+        # DO NOT raise - let the app start anyway so port opens
     
     yield
     
@@ -150,6 +151,11 @@ async def root():
         "version": "2.0.0"
     }
 
+@app.get("/ping")
+async def ping():
+    """Simple ping endpoint to ensure port is open"""
+    return {"status": "alive"}
+
 @app.get("/health")
 async def health():
     """Detailed health check"""
@@ -196,7 +202,3 @@ async def predict(request: PredictionRequest):
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Prediction failed: {str(e)}")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
